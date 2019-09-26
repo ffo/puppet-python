@@ -6,12 +6,22 @@
 #
 class python::install {
 
-  $python = $python::version ? {
-    'system'              => 'python',
-    'pypy'                => 'pypy',
-    /\A(python)?([0-9]+)/ => "python${2}",
-    /\Arh-python[0-9]{2}/ => $python::version,
-    default               => "python${python::version}",
+  if ($facts['os']['family'] == 'RedHat') and (versioncmp($facts['os']['release']['major'], '8') >= 0) {
+    $python = $python::version ? {
+      'system'              => 'python2',
+      'pypy'                => 'pypy',
+      /\A(python)?([0-9]+)/ => "python${2}",
+      /\Arh-python[0-9]{2}/ => $python::version,
+      default               => "python${python::version}",
+    }
+  } else {
+    $python = $python::version ? {
+      'system'              => 'python',
+      'pypy'                => 'pypy',
+      /\A(python)?([0-9]+)/ => "python${2}",
+      /\Arh-python[0-9]{2}/ => $python::version,
+      default               => "python${python::version}",
+    }
   }
 
   $pythondev = $facts['os']['family'] ? {
